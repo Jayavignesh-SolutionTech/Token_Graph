@@ -188,6 +188,40 @@ def tools(
 
 
 @app.command()
+def export(
+    output: Annotated[Path | None, typer.Option("--output", "-o", help="Write to this file instead of stdout.")] = None,
+    since: SinceOpt = None,
+    source: SourceOpt = Source.all,
+    project: ProjectOpt = None,
+) -> None:
+    """Export every breakdown as one JSON file for the TokenGuard dashboard."""
+    records, outputs = _load(source, since, project)
+    prices = PriceTable.load()
+    data: dict = {
+        "schema": "tokenguard.export/v1",
+        "version": __version__,
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "since": since,
+        "note": COST_NOTE,
+    }
+    for by in ("model", "project", "day", "source"):
+        buckets, total = summarize(records, prices, by)
+        data[f"by_{by}"] = [b.to_dict() for b in buckets]
+    data["total"] = total.to_dict()
+    data["tools"] = [
+        {"tool": b.tool, "results": b.results, "est_tokens": b.est_tokens, "largest_est_tokens": b.largest_chars // 4}
+        for b in summarize_tools(outputs)
+    ]
+    text = json.dumps(data, indent=2)
+    if output is None:
+        sys.stdout.write(text + "\n")
+    else:
+        output.write_text(text + "\n", encoding="utf-8")
+        console.print(f"Wrote {output} ({total.calls:,} calls, {_usd(total.cost_usd)}). "
+                      "Drop it on the TokenGuard dashboard to view it.")
+
+
+@app.command()
 def sources() -> None:
     """Show where TokenGuard looks for each agent's logs."""
     table = Table(header_style="bold")
