@@ -11,7 +11,7 @@ const LINKS = [
 export function Nav() {
   const pathname = usePathname();
   return (
-    <nav className="flex gap-1 text-sm">
+    <nav className="flex gap-1 text-sm font-medium">
       {LINKS.map(({ href, label }) => {
         const active = pathname === href;
         return (
@@ -19,8 +19,8 @@ export function Nav() {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`rounded-md px-3 py-1.5 transition-colors ${
-              active ? "bg-series-track text-text font-medium" : "text-text-2 hover:text-text"
+            className={`rounded-lg px-3 py-2 transition-colors ${
+              active ? "bg-accent-soft text-accent" : "text-text-2 hover:bg-accent-soft/60 hover:text-text"
             }`}
           >
             {label}
