@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tokenguard"
+version = "0.1.0"
+description = "Token and cost profiler for AI coding agents (Claude Code, Codex)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "LicenseRef-Proprietary"
+authors = [{ name = "Jayavignesh", email = "jayavignesh1608@gmail.com" }]
+dependencies = [
+    "typer>=0.12",
+    "rich>=13.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+tokenguard = "tokenguard.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tokenguard"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
