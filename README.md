@@ -1,12 +1,12 @@
 # TokenGuard
 
-Two tools for teams using AI coding agents: cost reporting and token optimization,
-and a prompt reshaper that gets better answers from fewer tokens
-(Claude Code, OpenAI Codex, and more to come).
+A code map for AI coding assistants. TokenGuard turns your project into a
+searchable map of files, functions and how they connect, so your assistant asks
+the map first and opens only the code it needs, using a fraction of the tokens.
 
-| Folder | What it is | Status |
-|---|---|---|
-| [`cli/`](cli/) | Python CLI that reads local agent logs and reports tokens and cost | Phase 1 |
-| [`dashboard/`](dashboard/) | Next.js app: usage & cost dashboard + prompt reshaper, deployed on Vercel | Phase 2 |
+| Folder | What it is |
+|---|---|
+| [`cli/`](cli/) | Python CLI: `scan` builds the code map, `serve` exposes it over MCP, `bench` measures tokens with vs without it, `report` profiles Claude Code / Codex session costs |
+| [`dashboard/`](dashboard/) | Next.js app on Vercel: the with/without comparison, session costs, and the prompt reshaper |
 
-See [cli/README.md](cli/README.md) to get started.
+Start with [cli/README.md](cli/README.md).

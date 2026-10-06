@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { DailyColumns, HBarChart, type BarDatum } from "@/components/charts";
+import { Comparison } from "@/components/Comparison";
 import {
   ArrowRightIcon,
   BoltIcon,
@@ -16,10 +17,14 @@ import {
   TerminalIcon,
   UploadIcon,
 } from "@/components/icons";
-import { parseExport, type Bucket, type TokenGuardExport } from "@/lib/export";
+import { parseAnyFile, type BenchResult, type LoadedFile } from "@/lib/bench";
+import { type Bucket, type TokenGuardExport } from "@/lib/export";
 import { pct, tokens, usd } from "@/lib/format";
 import { buildInsights, type InsightKind } from "@/lib/insights";
 import { SAMPLE_EXPORT } from "@/lib/sample";
+import sampleBench from "@/lib/sample-bench.json";
+
+const SAMPLE_BENCH = sampleBench as BenchResult;
 
 function bars(buckets: Bucket[], limit = 8): BarDatum[] {
   return buckets.slice(0, limit).map((b) => ({
@@ -34,16 +39,22 @@ function bars(buckets: Bucket[], limit = 8): BarDatum[] {
   }));
 }
 
+function sampleFor(param: string | null): LoadedFile | null {
+  if (param === "1" || param === "bench") return { kind: "bench", data: SAMPLE_BENCH };
+  if (param === "usage") return { kind: "usage", data: SAMPLE_EXPORT };
+  return null;
+}
+
 export function UsageDashboard() {
-  const startWithSample = useSearchParams().get("sample") === "1";
-  const [data, setData] = useState<TokenGuardExport | null>(startWithSample ? SAMPLE_EXPORT : null);
-  const [isSample, setIsSample] = useState(startWithSample);
+  const initial = sampleFor(useSearchParams().get("sample"));
+  const [loaded, setLoaded] = useState<LoadedFile | null>(initial);
+  const [isSample, setIsSample] = useState(initial !== null);
   const [error, setError] = useState<string | null>(null);
 
   async function loadFile(file: File | undefined) {
     if (!file) return;
     try {
-      setData(parseExport(await file.text()));
+      setLoaded(parseAnyFile(await file.text()));
       setIsSample(false);
       setError(null);
     } catch (e) {
@@ -51,14 +62,16 @@ export function UsageDashboard() {
     }
   }
 
-  function loadSample() {
-    setData(SAMPLE_EXPORT);
+  function loadSample(kind: "bench" | "usage") {
+    setLoaded(sampleFor(kind));
     setIsSample(true);
     setError(null);
   }
 
-  if (!data) return <Landing onFile={loadFile} onSample={loadSample} error={error} />;
-  return <Dashboard data={data} isSample={isSample} onReset={() => setData(null)} />;
+  const reset = () => setLoaded(null);
+  if (!loaded) return <Landing onFile={loadFile} onSample={loadSample} error={error} />;
+  if (loaded.kind === "bench") return <Comparison data={loaded.data} isSample={isSample} onReset={reset} />;
+  return <Dashboard data={loaded.data} isSample={isSample} onReset={reset} />;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -71,7 +84,7 @@ function Landing({
   error,
 }: {
   onFile: (f: File | undefined) => void;
-  onSample: () => void;
+  onSample: (kind: "bench" | "usage") => void;
   error: string | null;
 }) {
   return (
@@ -80,32 +93,39 @@ function Landing({
         <div>
           <span className="eyebrow">
             <SparklesIcon className="size-4" />
-            Token &amp; cost intelligence for AI coding teams
+            A code map for AI coding assistants
           </span>
           <h1 className="headline mt-6 text-5xl sm:text-6xl lg:text-7xl">
-            Know what every <span className="text-gradient">AI token</span> costs your team.
+            Your AI asks <span className="text-gradient">the map</span>, not the whole codebase.
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-2">
-            TokenGuard reads Claude Code and Codex session logs, prices every call, and shows where the spend goes:
-            by model, project, day and tool. Then it helps you cut it.
+            TokenGuard turns your project into a searchable map of files, functions and how they connect. Your
+            assistant asks the map first and opens only the code it needs, so answers use a fraction of the tokens.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <button type="button" onClick={onSample} className="btn btn-primary">
-              View live demo
+            <button type="button" onClick={() => onSample("bench")} className="btn btn-primary">
+              See the with/without demo
               <ArrowRightIcon className="size-4" />
             </button>
             <a href="#upload" className="btn btn-ghost">
               <UploadIcon className="size-4" />
-              Upload your export
+              Upload your results
             </a>
           </div>
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
             <span className="inline-flex items-center gap-1.5">
-              <ShieldIcon className="size-4 text-good" /> Runs in your browser
+              <ShieldIcon className="size-4 text-good" /> Built locally, 0 LLM tokens
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <LayersIcon className="size-4 text-accent" /> Claude Code + Codex
+              <LayersIcon className="size-4 text-accent" /> Python, JavaScript, TypeScript
             </span>
+            <button
+              type="button"
+              onClick={() => onSample("usage")}
+              className="inline-flex items-center gap-1.5 hover:text-text"
+            >
+              <CoinsIcon className="size-4 text-accent" /> Session cost demo
+            </button>
           </div>
         </div>
         <HeroVisual />
@@ -116,26 +136,26 @@ function Landing({
       <section>
         <div className="max-w-2xl">
           <span className="eyebrow">How it works</span>
-          <h2 className="headline mt-4 text-3xl sm:text-4xl">From raw logs to savings in three steps</h2>
+          <h2 className="headline mt-4 text-3xl sm:text-4xl">A map instead of the whole territory</h2>
         </div>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           <Step
             n={1}
             icon={<TerminalIcon />}
-            title="Export"
-            body="Run the TokenGuard CLI. It reads your agents' local session logs and prices every call."
+            title="Scan once"
+            body="tokenguard scan parses your code locally and records every function call, import, class and doc link. No LLM tokens."
           />
           <Step
             n={2}
-            icon={<UploadIcon />}
-            title="Drop the file here"
-            body="The JSON is parsed in your browser. Nothing is uploaded to a server."
+            icon={<LayersIcon />}
+            title="Query instead of read"
+            body="Your assistant connects over MCP and asks the map. It gets callers, callees and just the relevant lines, not hundreds of files."
           />
           <Step
             n={3}
             icon={<ScissorsIcon />}
-            title="Cut the waste"
-            body="See which models, projects and tools cost the most, with concrete places to save."
+            title="Measure the savings"
+            body="tokenguard bench runs the same questions with and without the map, and this dashboard shows the difference."
           />
         </div>
       </section>
@@ -150,12 +170,25 @@ function HeroVisual() {
       <div className="orbit inset-[14%]" />
       <div className="orbit inset-[30%] bg-[radial-gradient(circle,var(--accent-soft),transparent_70%)]" />
       <div className="absolute inset-[38%] grid place-items-center rounded-[28px] bg-gradient-to-br from-[#2d5bff] to-[#14b88a] shadow-[0_24px_60px_#2d5bff59]">
-        <CoinsIcon className="size-1/2 text-white" />
+        <LayersIcon className="size-1/2 text-white" />
       </div>
-      <Chip className="left-0 top-[12%]" label="Spend, last 14 days" value="$395.00" />
-      <Chip className="right-0 top-[30%]" label="Served from cache" value="94%" tone="good" />
-      <Chip className="bottom-[14%] left-[4%]" label="Bash tool output" value="38% of context" />
-      <Chip className="bottom-[2%] right-[8%]" label="Prompt reshaper" value="Same intent, fewer tokens" tone="good" />
+      <Chip
+        className="left-0 top-[12%]"
+        label={`Tokens per question (${SAMPLE_BENCH.repo})`}
+        value={`${pct(SAMPLE_BENCH.totals.saved_pct)} fewer`}
+        tone="good"
+      />
+      <Chip className="right-0 top-[30%]" label="Cost to build the map" value="0 LLM tokens" />
+      <Chip
+        className="bottom-[14%] left-[4%]"
+        label="Answers found"
+        value={`${SAMPLE_BENCH.totals.with_found}/${SAMPLE_BENCH.totals.judged} questions`}
+      />
+      <Chip
+        className="bottom-[2%] right-[8%]"
+        label="Relationships mapped"
+        value={SAMPLE_BENCH.graph.edges.toLocaleString("en-US")}
+      />
     </div>
   );
 }
@@ -185,7 +218,7 @@ function UploadCard({
   error,
 }: {
   onFile: (f: File | undefined) => void;
-  onSample: () => void;
+  onSample: (kind: "bench" | "usage") => void;
   error: string | null;
 }) {
   const [dragging, setDragging] = useState(false);
@@ -211,14 +244,14 @@ function UploadCard({
           <UploadIcon className="size-7" />
         </div>
         <p className="mt-4 font-semibold">
-          Drop <code className="font-mono text-sm">tokenguard.json</code> here
+          Drop <code className="font-mono text-sm">bench.json</code> here
         </p>
         <p className="mt-1 text-sm text-muted">Read in your browser, never uploaded.</p>
         <div className="mt-5 flex flex-wrap justify-center gap-3">
           <button type="button" onClick={() => inputRef.current?.click()} className="btn btn-primary">
             Choose file
           </button>
-          <button type="button" onClick={onSample} className="btn btn-ghost">
+          <button type="button" onClick={() => onSample("bench")} className="btn btn-ghost">
             Use sample data
           </button>
         </div>
@@ -232,15 +265,16 @@ function UploadCard({
         {error && <p className="mt-4 text-sm text-danger">{error}</p>}
       </div>
       <div className="flex min-w-0 flex-col justify-center">
-        <h2 className="text-xl font-bold tracking-tight">Create your export</h2>
-        <p className="mt-2 text-sm text-text-2">In PowerShell, from the repository folder:</p>
+        <h2 className="text-xl font-bold tracking-tight">Benchmark your own repository</h2>
+        <p className="mt-2 text-sm text-text-2">In PowerShell, with the TokenGuard CLI installed:</p>
         <pre className="code-card mt-4 overflow-x-auto p-5 font-mono text-[13px] leading-relaxed">
-          <span className="text-[#7aa2ff]">PS&gt;</span> cd Token_Graph\cli{"\n"}
-          <span className="text-[#7aa2ff]">PS&gt;</span> .\.venv\Scripts\Activate.ps1{"\n"}
-          <span className="text-[#7aa2ff]">PS&gt;</span> tokenguard export --since 30d -o tokenguard.json
+          <span className="text-[#7aa2ff]">PS&gt;</span> cd C:\path\to\your-repo{"\n"}
+          <span className="text-[#7aa2ff]">PS&gt;</span> tokenguard scan{"\n"}
+          <span className="text-[#7aa2ff]">PS&gt;</span> tokenguard bench -o bench.json
         </pre>
         <p className="mt-4 text-sm text-muted">
-          Reads Claude Code and Codex logs on your machine. Nothing is sent anywhere.
+          Everything runs on your machine, and the file is read in your browser, never uploaded. A{" "}
+          <code className="font-mono">tokenguard export</code> file of session costs works here too.
         </p>
       </div>
     </section>

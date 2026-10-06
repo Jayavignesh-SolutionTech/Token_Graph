@@ -2,7 +2,7 @@
 
 Next.js app with two tools:
 
-- **Usage & cost** (`/`): drop a `tokenguard export` JSON file to see cost by model, project and day, and which tools flood the context. The file is read in the browser and never uploaded. `/?sample=1` opens demo data.
+- **Usage & cost** (`/`): drop a `tokenguard bench` file to compare tokens per question with vs without the code map (with a team savings calculator), or a `tokenguard export` file for session costs. Files are read in the browser and never uploaded. Demos: `/?sample=1` (Flask benchmark), `/?sample=usage` (session costs).
 - **Prompt reshaper** (`/reshape`): rewrites a prompt to be clearer and use fewer tokens, via `POST /api/reshape`.
 
 ## Environment variables
