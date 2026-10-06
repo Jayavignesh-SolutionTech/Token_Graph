@@ -15,7 +15,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from tokenguard import __version__
+from tokenguard import __version__, cli_graph
 from tokenguard.models import ToolOutput, UsageRecord
 from tokenguard.pricing import USER_PRICING_PATH, PriceTable
 from tokenguard.report import summarize, summarize_tools
@@ -240,6 +240,9 @@ def sources() -> None:
 def version() -> None:
     """Print the TokenGuard version."""
     console.print(f"tokenguard {__version__}")
+
+
+cli_graph.register(app, console)
 
 
 if __name__ == "__main__":

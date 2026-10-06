@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "tokenguard"
 version = "0.1.0"
-description = "Token and cost profiler for AI coding agents (Claude Code, Codex)."
+description = "Code map for AI coding assistants, plus token and cost profiling (Claude Code, Codex)."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "LicenseRef-Proprietary"
@@ -13,6 +13,10 @@ authors = [{ name = "Jayavignesh", email = "jayavignesh1608@gmail.com" }]
 dependencies = [
     "typer>=0.12",
     "rich>=13.7",
+    "tree-sitter>=0.25",
+    "tree-sitter-javascript>=0.25",
+    "tree-sitter-typescript>=0.23",
+    "mcp>=2.3,<3",
 ]
 
 [project.optional-dependencies]

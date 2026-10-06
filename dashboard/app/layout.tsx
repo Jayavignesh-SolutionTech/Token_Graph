@@ -19,7 +19,7 @@ const mono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "TokenGuard",
-  description: "See where your AI coding agents spend tokens, and reshape prompts to use fewer of them.",
+  description: "A code map for AI coding assistants. Ask the map instead of reading the whole codebase, and use a fraction of the tokens.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -55,7 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 TokenGuard
               </div>
               <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#aebbd0]">
-                Cost reporting and token optimization for teams building with AI coding agents.
+                A code map for AI coding assistants: answers from the map, not from reading every file.
               </p>
             </div>
             <FooterColumn

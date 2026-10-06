@@ -1,0 +1,192 @@
+{
+  "schema": "tokenguard.bench/v1",
+  "version": "0.1.0",
+  "generated_at": "2026-10-06T06:08:50+00:00",
+  "repo": "flask",
+  "graph": {
+    "files": {
+      "docs": 85,
+      "python": 83
+    },
+    "nodes": 1837,
+    "edges": 3137,
+    "edges_by_kind": {
+      "contains": 1669,
+      "imports": 212,
+      "inherits": 36,
+      "calls": 683,
+      "mentions": 537
+    },
+    "scan_seconds": 2.99,
+    "build_llm_tokens": 0,
+    "source_tokens": 147354
+  },
+  "method": {
+    "without": "grep the repo for identifiers in the question (first 100 matching lines), then read the 5 files with the most matches",
+    "with": "one tokenguard_ask call: matching symbols with callers, callees and docs, plus source for the top matches within a 1,500-token budget",
+    "tokens": "estimated at ~4 characters per token, identically for both sides"
+  },
+  "questions": [
+    {
+      "question": "How does Flask.test_client work, and what calls it?",
+      "target": "src/flask/app.py::Flask.test_client",
+      "without_tokens": 36090,
+      "without_files": 5,
+      "without_found": true,
+      "with_tokens": 1506,
+      "with_found": true,
+      "saved_pct": 0.9583
+    },
+    {
+      "question": "Where is Flask.test_request_context used, and what does it call?",
+      "target": "src/flask/app.py::Flask.test_request_context",
+      "without_tokens": 42850,
+      "without_files": 5,
+      "without_found": true,
+      "with_tokens": 1434,
+      "with_found": true,
+      "saved_pct": 0.9665
+    },
+    {
+      "question": "How does Blueprint.record_once work, and what calls it?",
+      "target": "src/flask/sansio/blueprints.py::Blueprint.record_once",
+      "without_tokens": 6932,
+      "without_files": 1,
+      "without_found": true,
+      "with_tokens": 1502,
+      "with_found": true,
+      "saved_pct": 0.7833
+    },
+    {
+      "question": "What is the FlaskGroup class responsible for, and what depends on it?",
+      "target": "src/flask/cli.py::FlaskGroup",
+      "without_tokens": 14530,
+      "without_files": 2,
+      "without_found": true,
+      "with_tokens": 1506,
+      "with_found": true,
+      "saved_pct": 0.8964
+    },
+    {
+      "question": "How does Blueprint.add_app_template_filter work, and what calls it?",
+      "target": "src/flask/sansio/blueprints.py::Blueprint.add_app_template_filter",
+      "without_tokens": 14730,
+      "without_files": 2,
+      "without_found": true,
+      "with_tokens": 1380,
+      "with_found": true,
+      "saved_pct": 0.9063
+    },
+    {
+      "question": "Where is Scaffold._method_route used, and what does it call?",
+      "target": "src/flask/sansio/scaffold.py::Scaffold._method_route",
+      "without_tokens": 7794,
+      "without_files": 1,
+      "without_found": true,
+      "with_tokens": 1496,
+      "with_found": true,
+      "saved_pct": 0.8081
+    },
+    {
+      "question": "What is the ScriptInfo class responsible for, and what depends on it?",
+      "target": "src/flask/cli.py::ScriptInfo",
+      "without_tokens": 19861,
+      "without_files": 4,
+      "without_found": true,
+      "with_tokens": 1430,
+      "with_found": true,
+      "saved_pct": 0.928
+    },
+    {
+      "question": "Where is Config.from_pyfile used, and what does it call?",
+      "target": "src/flask/config.py::Config.from_pyfile",
+      "without_tokens": 5777,
+      "without_files": 3,
+      "without_found": true,
+      "with_tokens": 1228,
+      "with_found": true,
+      "saved_pct": 0.7874
+    },
+    {
+      "question": "What is the TaggedJSONSerializer class responsible for, and what depends on it?",
+      "target": "src/flask/json/tag.py::TaggedJSONSerializer",
+      "without_tokens": 6744,
+      "without_files": 3,
+      "without_found": true,
+      "with_tokens": 1301,
+      "with_found": true,
+      "saved_pct": 0.8071
+    },
+    {
+      "question": "Where is Config.from_prefixed_env used, and what does it call?",
+      "target": "src/flask/config.py::Config.from_prefixed_env",
+      "without_tokens": 5571,
+      "without_files": 3,
+      "without_found": true,
+      "with_tokens": 1334,
+      "with_found": true,
+      "saved_pct": 0.7605
+    },
+    {
+      "question": "How does create_app work, and what calls it?",
+      "target": "examples/tutorial/flaskr/__init__.py::create_app",
+      "without_tokens": 15543,
+      "without_files": 5,
+      "without_found": false,
+      "with_tokens": 1039,
+      "with_found": true,
+      "saved_pct": 0.9332
+    },
+    {
+      "question": "Where is AppContext._get_session used, and what does it call?",
+      "target": "src/flask/ctx.py::AppContext._get_session",
+      "without_tokens": 21017,
+      "without_files": 2,
+      "without_found": true,
+      "with_tokens": 1499,
+      "with_found": true,
+      "saved_pct": 0.9287
+    },
+    {
+      "question": "How does dumps work, and what calls it?",
+      "target": "src/flask/json/__init__.py::dumps",
+      "without_tokens": 8960,
+      "without_files": 5,
+      "without_found": true,
+      "with_tokens": 1009,
+      "with_found": true,
+      "saved_pct": 0.8874
+    },
+    {
+      "question": "Where is App._find_error_handler used, and what does it call?",
+      "target": "src/flask/sansio/app.py::App._find_error_handler",
+      "without_tokens": 26320,
+      "without_files": 2,
+      "without_found": true,
+      "with_tokens": 1384,
+      "with_found": true,
+      "saved_pct": 0.9474
+    },
+    {
+      "question": "How does Scaffold.register_error_handler work, and what calls it?",
+      "target": "src/flask/sansio/scaffold.py::Scaffold.register_error_handler",
+      "without_tokens": 17733,
+      "without_files": 3,
+      "without_found": true,
+      "with_tokens": 1513,
+      "with_found": true,
+      "saved_pct": 0.9147
+    }
+  ],
+  "totals": {
+    "questions": 15,
+    "without_tokens": 250452,
+    "with_tokens": 20561,
+    "saved_tokens": 229891,
+    "saved_pct": 0.9179,
+    "ratio": 12.18,
+    "with_found": 15,
+    "without_found": 14,
+    "judged": 15
+  }
+}
